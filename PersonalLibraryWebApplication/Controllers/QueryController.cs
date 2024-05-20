@@ -95,6 +95,49 @@ namespace PersonalLibraryWebApplication.Controllers
             return View("FilterPublishersByLanguage", model);
         }
 
+        [HttpGet]
+        public IActionResult FilterPublishersByAuthor()
+        {
+            var model = new QueryViewModel
+            {
+                AvailableAuthors = _context.Authors.ToList()
+            };
 
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult FilterPublishersByAuthor(QueryViewModel model)
+        {
+            var selectedAuthorId = model.SelectedId;
+
+            var publishers = new List<Publisher>();
+            if (model.SelectedId == 0)
+            {
+                publishers = _context.Publishers.ToList();
+            }
+            else
+            {
+                // SQL запит для отримання авторів, які видають книги в категоріях автора Х
+                string sqlQuery = @"
+                    SELECT  *
+                    FROM Publishers
+		            WHERE ID IN(
+						SELECT PublisherID FROM BookPublishers
+						WHERE BookID IN(
+							SELECT ID FROM Books
+							WHERE AuthorID = {0}))";
+
+                if (selectedAuthorId > 0)
+                {
+                    string formattedQuery = string.Format(sqlQuery, selectedAuthorId);
+                    publishers = _context.Publishers.FromSqlRaw(formattedQuery).ToList();
+                }
+            }
+
+            model.Publishers = publishers;
+            model.AvailableAuthors = _context.Authors.ToList();
+            return View("FilterPublishersByAuthor", model);
+        }
     }
 }
