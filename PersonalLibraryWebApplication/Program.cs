@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using PersonalLibraryWebApplication.Models;
+using System.Globalization;
+
+CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("uk-UA");
+Thread.CurrentThread.CurrentCulture = CultureInfo.DefaultThreadCurrentCulture;
 
 var builder = WebApplication.CreateBuilder(args);
 

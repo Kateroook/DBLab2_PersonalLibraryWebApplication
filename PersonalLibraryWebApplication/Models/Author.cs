@@ -17,7 +17,7 @@ public partial class Author
 
     [Display(Name = "Дата народження")]
     [DataType(DataType.Date)]
-    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+    [DisplayFormat(DataFormatString = "{0:dd MMMM yyyy}", ApplyFormatInEditMode = true)]
     public DateOnly? BirthDate { get; set; }
 
     //Navigation property
