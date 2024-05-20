@@ -1,0 +1,81 @@
+﻿@model PersonalLibraryWebApplication.Models.Book
+
+@{
+    ViewData["Title"] = "Редагувати";
+}
+
+<h1>Редагувати</h1>
+
+<h4>Книгу</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="AuthorId" class="control-label"></label>
+                <select asp-for="AuthorId" class="form-control" asp-items="ViewBag.AuthorId"></select>
+                <span asp-validation-for="AuthorId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LanguageId" class="control-label"></label>
+                <select asp-for="LanguageId" class="form-control" asp-items="ViewBag.LanguageId"></select>
+                <span asp-validation-for="LanguageId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PublishingYear" class="control-label"></label>
+                <input asp-for="PublishingYear" class="form-control" />
+                <span asp-validation-for="PublishingYear" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Pages" class="control-label"></label>
+                <input asp-for="Pages" class="form-control" />
+                <span asp-validation-for="Pages" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Categories" class="control-label">Категорії</label>
+                <select id="categorySelect" asp-for="Categories" class="form-control" asp-items="ViewBag.CategoryIds" multiple="multiple"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Publishers" class="control-label">Видання</label>
+                <select id="publisherSelect" asp-for="Publishers" class="form-control" asp-items="ViewBag.PublisherIds" multiple="multiple"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Зберегти" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Назад до списку книжок</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        $('#categorySelect').select2();
+        $('#publisherSelect').select2();
+
+        var selectedCategories = @Html.Raw(Json.Serialize(ViewBag.SelectedCategories));
+        $('#categorySelect').val(selectedCategories).trigger('change');
+
+        var selectedPublishers = @Html.Raw(Json.Serialize(ViewBag.SelectedPublishers));
+        $('#publisherSelect').val(selectedPublishers).trigger('change');
+    </script>
+}
