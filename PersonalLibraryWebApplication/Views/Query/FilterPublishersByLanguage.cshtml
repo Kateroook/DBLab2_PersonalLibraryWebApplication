@@ -1,0 +1,41 @@
+﻿@model PersonalLibraryWebApplication.ViewModel.QueryViewModel
+
+@{
+    ViewBag.Title = "Видавництва за мовою";
+}
+
+<h1>Видавництва, що видають книги мовою</h1>
+<div class="row">
+    <div class="col-md-6">
+        @using (Html.BeginForm("FilterPublishersByLanguage", "Query", FormMethod.Post))
+        {
+            <div style="padding-top:20px; padding-bottom:20px;">
+                <label>Виберіть мову:</label>
+                <select name="SelectedId">
+                    <option value="0">--Будь-якою мовою--</option>
+                    @foreach (var language in Model.AvailableLanguages)
+                    {
+                        <option value="@language.Id">@language.Name</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-secondary">Показати видавництва</button>
+        }
+    </div>
+    <div style="padding-top:40px;">
+        @if (Model.Publishers != null && Model.Publishers.Count > 0)
+        {
+            <h3>Список видавництв:</h3>
+            <ul>
+                @foreach (var publisher in Model.Publishers)
+                {
+                    <li>@publisher.Name</li>
+                }
+            </ul>
+        }
+        else if (Model.Publishers != null)
+        {
+            <p>Немає видавництв для відображення.</p>
+        }
+    </div>
+</div>

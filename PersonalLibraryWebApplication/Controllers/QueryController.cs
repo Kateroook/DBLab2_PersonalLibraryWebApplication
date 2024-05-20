@@ -28,7 +28,6 @@ namespace PersonalLibraryWebApplication.Controllers
 
             return View(model);
         }
-
         [HttpPost]
         public IActionResult FilterBooksByCategories(QueryViewModel model)
         {
@@ -58,7 +57,44 @@ namespace PersonalLibraryWebApplication.Controllers
 
             return View("FilterBooksByCategories", model);
         }
+        [HttpGet]
+        public IActionResult FilterPublishersByLanguage()
+        {
+            var model = new QueryViewModel
+            {
+                AvailableLanguages = _context.Languages.ToList()
+            };
 
-        
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult FilterPublishersByLanguage(QueryViewModel model)
+        {
+            var publishers = new List<Publisher>();
+
+            if (model.SelectedId == 0)
+            {
+                string sqlQuery = "SELECT * FROM Publishers";
+                publishers = _context.Publishers.FromSqlRaw(sqlQuery).ToList();
+            }
+            else
+            {
+                string sqlQuery = @"SELECT DISTINCT Publishers.*
+                    FROM Publishers, Books, Languages, BookPublishers
+                    WHERE Languages.ID = ({0})
+	                    AND Languages.ID = Books.LanguageID
+	                    AND Books.ID = BookPublishers.BookID
+	                    AND Publishers.ID = BookPublishers.PublisherID";
+                string formattedQuery = string.Format(sqlQuery, model.SelectedId);
+                publishers = _context.Publishers.FromSqlRaw(formattedQuery).ToList();
+            }
+            model.AvailableLanguages = _context.Languages.ToList();
+            model.Publishers = publishers;
+
+            return View("FilterPublishersByLanguage", model);
+        }
+
+
     }
 }

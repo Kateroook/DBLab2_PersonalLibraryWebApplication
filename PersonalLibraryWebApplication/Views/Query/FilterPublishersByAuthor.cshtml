@@ -1,0 +1,57 @@
+﻿@model PersonalLibraryWebApplication.ViewModel.QueryViewModel
+
+@{
+    ViewBag.Title = "Видавництва, що видають книги автора";
+}
+
+<h1>Видавництва, що видають книги автора</h1>
+<div class="row">
+    <div>
+        @using (Html.BeginForm("FilterBooksByAuthor", "Query", FormMethod.Post))
+        {
+            <div style="padding-top:20px; padding-bottom:20px;">
+                <label>Виберіть автора:</label>
+                <select id="authorSelect" name="SelectedAuthorId">
+                    <option value="0">-- Виберіть автора --</option>
+                    @foreach (var author in Model.AvailableAuthors)
+                    {
+                        <option value="@author.Id">@author.Name</option>
+                    }
+                </select>
+            </div>
+            <button class="btn btn-secondary" type="submit">Показати книги</button>
+        }
+    </div>
+
+    <div style="padding-top:40px;">
+
+        @if (Model.Publishers != null && Model.Publishers.Count > 0)
+        {
+            <h3>Список видавництв:</h3>
+            <ul>
+                @foreach (var author in Model.Publishers)
+                {
+                    <li>@author.Name</li>
+                }
+            </ul>
+        }
+        else if (Model.Publishers != null)
+        {
+            <p>Немає видавництв для відображення.</p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#authorSelect').select2();
+        });
+    </script>
+}
