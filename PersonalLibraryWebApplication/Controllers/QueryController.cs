@@ -58,6 +58,38 @@ namespace PersonalLibraryWebApplication.Controllers
             return View("FilterBooksByCategories", model);
         }
         [HttpGet]
+        public IActionResult FilterBooksNotSimilarToSelected()
+        {
+            var model = new QueryViewModel { AvailableBooks = _context.Books.ToList() };
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult FilterBooksNotSimilarToSelected(QueryViewModel model)
+        {
+            var bookId = model.SelectedId;
+
+            var sql = @"
+            SELECT *
+            FROM Books
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM BookCategories 
+                WHERE BookId = Books.ID
+                AND CategoryId IN (
+                    SELECT CategoryId
+                    FROM BookCategories
+                    WHERE BookId = {0}
+                )
+            )";
+
+            var books = _context.Books.FromSqlRaw(sql, bookId).ToList();
+            model.Books = books;
+            model.AvailableBooks = _context.Books.ToList();
+
+            return View("FilterBooksNotSimilarToSelected", model);
+        }
+        [HttpGet]
         public IActionResult FilterPublishersByLanguage()
         {
             var model = new QueryViewModel
@@ -139,5 +171,7 @@ namespace PersonalLibraryWebApplication.Controllers
             model.AvailableAuthors = _context.Authors.ToList();
             return View("FilterPublishersByAuthor", model);
         }
+
+
     }
 }

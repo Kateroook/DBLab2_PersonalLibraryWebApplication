@@ -9,6 +9,8 @@ namespace PersonalLibraryWebApplication.ViewModel
         public List<Category> AvailableCategories { get; set; } = new List<Category>();       
         public List<Language> AvailableLanguages { get; set; } = new List<Language>();
         public List<Author> AvailableAuthors{ get; set; } = new List<Author>();
+        public List<Book> AvailableBooks { get; set; } = new List<Book>();
+
         public List<Book> Books { get; set; }
         public List<Publisher> Publishers { get; set; }
     }
