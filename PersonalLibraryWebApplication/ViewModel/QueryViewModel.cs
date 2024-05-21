@@ -10,8 +10,11 @@ namespace PersonalLibraryWebApplication.ViewModel
         public List<Language> AvailableLanguages { get; set; } = new List<Language>();
         public List<Author> AvailableAuthors{ get; set; } = new List<Author>();
         public List<Book> AvailableBooks { get; set; } = new List<Book>();
+        public List<User> AvailableUsers { get; set; } = new List<User>();
 
         public List<Book> Books { get; set; }
         public List<Publisher> Publishers { get; set; }
+        public List<User> Users { get; set; }
+        public List<Author> Authors { get; set; }
     }
 }

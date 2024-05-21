@@ -1,0 +1,55 @@
+﻿@model PersonalLibraryWebApplication.ViewModel.QueryViewModel
+
+@{
+    ViewBag.Title = "Схожі книги у добірках вибраних користувачів";
+}
+
+<h1>Схожі книги у добірках вибраних користувачів</h1>
+<div class="row">
+    <div>
+        @using (Html.BeginForm("FilterSimilarBooksInUserBooklist", "Query", FormMethod.Post))
+        {
+            <div style="padding-top:20px; padding-bottom:20px;">
+                <label>Виберіть користувачів для порівняння:</label>
+                <select id="categoriesSelect" name="SelectedIds" multiple="multiple">
+                    @foreach (var user in Model.AvailableUsers)
+                    {
+                        <option value="@user.Id">@user.Name</option>
+                    }
+                </select>
+            </div>
+            <button class="btn btn-secondary" type="submit">Показати книги</button>
+        }
+    </div>
+
+    <div style="padding-top:40px;">
+        @if (Model.Books != null && Model.Books.Count > 0)
+        {
+            <h3>Список книг:</h3>
+            <ul>
+                @foreach (var book in Model.Books)
+                {
+                    <li>@book.Title</li>
+                }
+            </ul>
+        }
+        else if (Model.Books != null)
+        {
+            <p>Немає книг для відображення.</p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#categoriesSelect').select2();
+        });
+    </script>
+}

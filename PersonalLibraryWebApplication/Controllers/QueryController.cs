@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using PersonalLibraryWebApplication.Models;
 using PersonalLibraryWebApplication.ViewModel;
+using System.Security.Policy;
+using Publisher = PersonalLibraryWebApplication.Models.Publisher;
 
 namespace PersonalLibraryWebApplication.Controllers
 {
@@ -217,6 +219,155 @@ namespace PersonalLibraryWebApplication.Controllers
             return View("FilterPublishersByAuthor", model);
         }
 
+        [HttpGet]
+        public IActionResult FilterUsersByAuthorInBooklists()
+        {
+            var model = new QueryViewModel
+            {
+                AvailableAuthors = _context.Authors.ToList()
+            };
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult FilterUsersByAuthorInBooklists(QueryViewModel model)
+        {
+            var selectedAuthorId = model.SelectedId;
+            var users = _context.Users.ToList();
 
+            if (model.SelectedId == 0)
+            {
+                return NotFound();
+            }
+            else
+            {
+                string sqlQuery = @"
+                    SELECT DISTINCT u.*
+                    FROM Users u
+                    JOIN Booklists d ON u.ID = d.UserId
+                    JOIN BooksInBooklists kd ON d.Id = kd.BooklistId
+                    JOIN Books k ON kd.BookId = k.Id
+                    WHERE k.AuthorId = {0}
+                ";
+                if (selectedAuthorId > 0)
+                {
+                    string formattedQuery = string.Format(sqlQuery, selectedAuthorId);
+                    users = _context.Users.FromSqlRaw(formattedQuery).ToList();
+                }
+                model.Users = users;
+                model.AvailableAuthors = _context.Authors.ToList();
+                return View("FilterUsersByAuthorInBooklists", model);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult FilterSimilarBooksInUserBooklist()
+        {
+            var model = new QueryViewModel
+            {
+                AvailableUsers = _context.Users.ToList()
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult FilterSimilarBooksInUserBooklist(QueryViewModel model)
+        {
+            var userIds = model.SelectedIds;
+
+            if (userIds != null && userIds.Count > 0)
+            {
+                string bookIdsSqlQuery = @"
+                    SELECT DISTINCT b.ID
+                    FROM Books b, BooksInBooklists kd, Booklists d 
+                    WHERE b.Id = kd.BookId
+                    AND kd.BooklistId = d.Id
+                    AND d.UserId IN ({0})
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM Booklists d2
+                        WHERE d2.UserId NOT IN ({0})
+                        AND NOT EXISTS (
+                            SELECT 1
+                            FROM BooksInBooklists kd2
+                            WHERE kd2.BooklistId = d2.Id
+                            AND kd2.BookId = b.Id
+                        )
+                    )";
+
+                string formattedQuery = string.Format(bookIdsSqlQuery, string.Join(",", userIds));
+                
+                var bookIds = _context.Books.FromSqlRaw(formattedQuery)
+                    .Select(b => b.Id)
+                    .ToList();
+                var books = _context.Books
+                    .Where(b => bookIds.Contains(b.Id))
+                    .ToList();
+                model.Books = books;
+            }
+            else
+            {
+                model.Books = _context.Books.ToList();
+            }
+
+            model.AvailableUsers = _context.Users.ToList();
+
+            return View("FilterSimilarBooksInUserBooklist", model);
+        }
+
+        [HttpGet]
+        public IActionResult FilterAuthorsByCategoriesOfAuthor()
+        {
+            var model = new QueryViewModel { AvailableAuthors = _context.Authors.ToList() };
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public IActionResult FilterAuthorsByCategoriesOfAuthor(QueryViewModel model)
+        {
+            var selectedAuthorId = model.SelectedId;
+            var authors = new List<Author>();
+
+            if (model.SelectedId == 0)
+            {
+                authors = _context.Authors.ToList();
+            }
+            else
+            {
+
+                string sqlQuery = @"
+            SELECT DISTINCT a.ID
+            FROM Authors a, Books b
+            WHERE a.Id = b.AuthorId           
+            AND EXISTS (
+                SELECT  1
+                FROM BookCategories bc
+                WHERE bc.BookId = b.Id
+                AND bc.CategoryId IN (
+                    SELECT bc2.CategoryId
+                    FROM BookCategories bc2, Books b2
+                    WHERE bc2.BookId = b2.Id
+                    AND b2.AuthorId = {0}
+                )
+            )
+            AND a.Id <> {0}";
+
+                if (selectedAuthorId > 0)
+                {
+                    string formattedQuery = string.Format(sqlQuery, selectedAuthorId);
+                    var authorsIds = _context.Authors.FromSqlRaw(formattedQuery)
+                        .Select(a => a.Id)
+                        .ToList();
+
+                    authors = _context.Authors
+                        .Where(b => authorsIds.Contains(b.Id))
+                        .ToList();                    
+                }
+            }
+            model.Authors = authors;
+            model.AvailableAuthors = _context.Authors.ToList();
+
+            return View("FilterAuthorsByCategoriesOfAuthor", model);
+        }
     }
 }
