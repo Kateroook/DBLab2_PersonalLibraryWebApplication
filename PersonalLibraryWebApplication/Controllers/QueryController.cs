@@ -31,7 +31,7 @@ namespace PersonalLibraryWebApplication.Controllers
         [HttpPost]
         public IActionResult FilterBooksByCategories(QueryViewModel model)
         {
-            var categoryIds = model.SelectedCategoryIds;
+            var categoryIds = model.SelectedIds;
             var books = new List<Book>();
             if (categoryIds != null && categoryIds.Count > 0)
             {
@@ -57,6 +57,51 @@ namespace PersonalLibraryWebApplication.Controllers
 
             return View("FilterBooksByCategories", model);
         }
+
+        [HttpGet]
+        public IActionResult FilterBooksByAllCategories()
+        {
+            var model = new QueryViewModel
+            {
+                AvailableCategories = _context.Categories.ToList()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult FilterBooksByAllCategories(QueryViewModel model)
+        {
+            var categoryIds = model.SelectedIds;
+
+            if (categoryIds != null && categoryIds.Count > 0)
+            {
+                string sqlQuery = @"
+                    SELECT *
+                    FROM Books 
+                    WHERE NOT EXISTS (
+                        SELECT ID
+                        FROM Categories
+                        WHERE ID IN ({0})
+                        EXCEPT
+                        SELECT CategoryId
+                        FROM BookCategories 
+                        WHERE BookId = Books.ID
+                    )";
+
+                string formattedQuery = string.Format(sqlQuery, string.Join(",", categoryIds), categoryIds.Count);
+                model.Books = _context.Books.FromSqlRaw(formattedQuery).ToList();
+            }
+            else
+            {
+                model.Books = _context.Books.ToList();
+            }
+
+            model.AvailableCategories = _context.Categories.ToList();
+
+            return View("FilterBooksByAllCategories", model);
+        }
+
         [HttpGet]
         public IActionResult FilterBooksNotSimilarToSelected()
         {
