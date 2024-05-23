@@ -1,18 +1,21 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Меню";
 }
 
 <div class="text-center">
     <h1 style="padding-bottom: 20px;">Прості запити</h1>
-    <a class="btn btn-primary mr-2" asp-controller="Query" asp-action="FilterBooksByCategories">Книги за категоріями (хоча б 1)</a>
-    <a class="btn btn-primary mr-2" asp-controller="Query" asp-action="FilterBooksNotSimilarToSelected">Книги без категорій книги Х</a>
-    <a class="btn btn-outline-primary mr-2" asp-controller="Query" asp-action="FilterPublishersByLanguage">Видання, що видають книги мовою Х</a>
-    <a class="btn btn-outline-primary mr-2" asp-controller="Query" asp-action="FilterPublishersByAuthor">Видання, що видають книги автора Х</a>
-    <a class="btn btn-outline-primary mr-2" asp-controller="Query" asp-action="FilterUsersByAuthorInBooklists">Користувачі, що читають книги автора Х</a>
-
-    <h1 style="padding-bottom: 20px; padding-top:80px;">Множинні запити</h1>
-    <a class="btn btn-primary mr-2" asp-controller="Query" asp-action="FilterBooksByAllCategories">Книги за категоріями (усі)</a>
-    <a class="btn btn-primary mr-2" asp-controller="Query" asp-action="FilterSimilarBooksInUserBooklist">Схожі книги у добірках вибраних користувачів</a>
-    <a class="btn btn-primary mr-2" asp-controller="Query" asp-action="FilterAuthorsByCategoriesOfAuthor">Схожі автори на автора Х</a>
+    <div>
+        <a class="btn btn-primary " asp-controller="Query" asp-action="FilterBooksByCategories" style="margin-bottom: 10px">Книги за категоріями (хоча б 1)</a>
+        <a class="btn btn-primary" asp-controller="Query" asp-action="FilterBooksNotSimilarToSelected" style="margin-bottom: 10px">Книги без категорій книги Х</a>
+        <a class="btn btn-primary" asp-controller="Query" asp-action="FilterPublishersByLanguage" style="margin-bottom: 10px">Видання, що видають книги мовою Х</a>
+        <a class="btn btn-primary" asp-controller="Query" asp-action="FilterPublishersByAuthor" style="margin-bottom: 10px">Видання, що видають книги автора Х</a>
+        <a class="btn btn-primary " asp-controller="Query" asp-action="FilterUsersByAuthorInBooklists" style="margin-bottom: 10px">Користувачі, що читають книги автора Х</a>
+    </div>
+        <h1 style="padding-bottom: 20px; padding-top:80px;">Множинні запити</h1>
+    <div>
+        <a class="btn btn-primary mr-2" asp-controller="Query" asp-action="FilterBooksByAllCategories">Книги за категоріями (усі)</a>
+        <a class="btn btn-primary mr-2" asp-controller="Query" asp-action="FilterSimilarBooksInUserBooklist">Схожі книги у добірках вибраних користувачів</a>
+        <a class="btn btn-primary mr-2" asp-controller="Query" asp-action="FilterAuthorsByCategoriesOfAuthor">Схожі автори на автора Х</a>
+    </div>
 
 </div>
